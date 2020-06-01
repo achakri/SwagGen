@@ -15,6 +15,7 @@ public class CodeFormatter {
     var modelNames: [String: String]
     var enumNames: [String: String]
     var propertyNames: [String: String]
+    var acronyms: [String: String]
 
     public init(spec: SwaggerSpec, templateConfig: TemplateConfig) {
         self.spec = spec
@@ -25,6 +26,7 @@ public class CodeFormatter {
         modelNames = templateConfig.options["modelNames"] as? [String: String] ?? [:]
         enumNames = templateConfig.options["enumNames"] as? [String: String] ?? [:]
         propertyNames = templateConfig.options["propertyNames"] as? [String: String] ?? [:]
+        acronyms = templateConfig.options["acronyms"] as? [String: String] ?? [:]
     }
 
     var disallowedNames: [String] {
@@ -421,7 +423,10 @@ public class CodeFormatter {
 
         context["required"] = property.required
         context["optional"] = property.nullable
-        context["name"] = propertyNames[property.name] ?? getName(property.name)      
+        context["name"] = propertyNames[property.name] ?? getName(property.name)
+        for (key, value) in acronyms where context["name"].hasPrefix(key) {
+            context["name"] = context["name"].replacingOccurrences(of: key, with: value)
+        }
         context["value"] = property.name
         context["type"] = getSchemaType(name: property.name, schema: property.schema)
 
