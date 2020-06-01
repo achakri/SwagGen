@@ -3,7 +3,11 @@
 {% endif %}
 public enum {{ enumName }}: {{ type }}, Codable, Equatable, CaseIterable {
     {% for enumCase in enums %}
+    {% if enumCase.name == enumCase.value %}
+    case {{ enumCase.name }}
+    {% else %}
     case {{ enumCase.name }} = {% if type == "String" %}"{% endif %}{{enumCase.value}}{% if type == "String" %}"{% endif %}
+    {% endif %}
     {% endfor %}
     {% if options.enumUndecodableCase %}
     case undecodable
